@@ -1,5 +1,6 @@
 // Licensed under the MIT License. See LICENSE in the project root for license information.
 
+using Buidalon.Editor.BuildPipeline.Logging;
 using JetBrains.Annotations;
 using System;
 using System.Collections.Generic;
@@ -11,10 +12,9 @@ using UnityEditor;
 using UnityEditor.Build;
 using UnityEditor.Build.Reporting;
 using UnityEngine;
-using Utilities.Editor.BuildPipeline.Logging;
 using Debug = UnityEngine.Debug;
 
-namespace Utilities.Editor.BuildPipeline
+namespace Buidalon.Editor.BuildPipeline
 {
     /// <summary>
     /// Cross-platform player build tools

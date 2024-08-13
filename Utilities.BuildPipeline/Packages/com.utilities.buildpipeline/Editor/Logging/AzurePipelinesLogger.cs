@@ -1,6 +1,6 @@
 ﻿// Licensed under the MIT License. See LICENSE in the project root for license information.
 
-namespace Utilities.Editor.BuildPipeline.Logging
+namespace Buidalon.Editor.BuildPipeline.Logging
 {
     /// <summary>
     /// Azure Pipelines CI Logger

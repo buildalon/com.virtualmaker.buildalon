@@ -1,5 +1,6 @@
 // Licensed under the MIT License. See LICENSE in the project root for license information.
 
+using Buidalon.Editor.BuildPipeline.Logging;
 using System;
 using System.Collections.Generic;
 using System.IO;
@@ -7,9 +8,8 @@ using System.Linq;
 using UnityEditor;
 using UnityEditor.Build.Reporting;
 using UnityEngine;
-using Utilities.Editor.BuildPipeline.Logging;
 
-namespace Utilities.Editor.BuildPipeline
+namespace Buidalon.Editor.BuildPipeline
 {
     /// <summary>
     /// A generic build info class.

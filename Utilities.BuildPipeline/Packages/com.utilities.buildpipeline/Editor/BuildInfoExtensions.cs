@@ -3,7 +3,7 @@
 using System.Collections.Generic;
 using System.Linq;
 
-namespace Utilities.Editor.BuildPipeline
+namespace Buidalon.Editor.BuildPipeline
 {
     public static class BuildInfoExtensions
     {

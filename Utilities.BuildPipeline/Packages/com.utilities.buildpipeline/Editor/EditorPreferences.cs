@@ -3,7 +3,7 @@
 using UnityEditor;
 using UnityEngine;
 
-namespace Utilities.Editor.BuildPipeline
+namespace Buidalon.Editor.BuildPipeline
 {
     /// <summary>
     /// Convenience class for setting Editor Preferences with <see cref="Application.productName"/> as key prefix.

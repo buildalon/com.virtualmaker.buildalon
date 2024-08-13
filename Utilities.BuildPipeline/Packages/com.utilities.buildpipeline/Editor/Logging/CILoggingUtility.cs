@@ -8,7 +8,7 @@ using UnityEditor.Build.Reporting;
 using UnityEngine;
 using Debug = UnityEngine.Debug;
 
-namespace Utilities.Editor.BuildPipeline.Logging
+namespace Buidalon.Editor.BuildPipeline.Logging
 {
     /// <summary>
     /// Logging utility designed to properly output logs to continuous integration workflow logging consoles.
