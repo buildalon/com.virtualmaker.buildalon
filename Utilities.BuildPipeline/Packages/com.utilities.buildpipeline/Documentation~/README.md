@@ -1,6 +1,6 @@
-# com.utilities.buildpipeline
+# com.virtualmaker.buildalon
 
-[![Discord](https://img.shields.io/discord/855294214065487932.svg?label=&logo=discord&logoColor=ffffff&color=7389D8&labelColor=6A7EC2)](https://discord.gg/xQgMW9ufN4) [![openupm](https://img.shields.io/npm/v/com.utilities.buildpipeline?label=openupm&registry_uri=https://package.openupm.com)](https://openupm.com/packages/com.utilities.buildpipeline/) [![openupm](https://img.shields.io/badge/dynamic/json?color=brightgreen&label=downloads&query=%24.downloads&suffix=%2Fmonth&url=https%3A%2F%2Fpackage.openupm.com%2Fdownloads%2Fpoint%2Flast-month%2Fcom.utilities.buildpipeline)](https://openupm.com/packages/com.utilities.buildpipeline/) [![marketplace](https://img.shields.io/static/v1?label=&labelColor=505050&message=Unity%20Build%20Pipeline%20Utility&color=0076D6&logo=github-actions&logoColor=0076D6)](https://github.com/marketplace/actions/unity-build-pipeline-utility)
+[![Discord](https://img.shields.io/discord/939721153688264824.svg?label=&logo=discord&logoColor=ffffff&color=7389D8&labelColor=6A7EC2)](https://discord.gg/VM9cWJ9rjH) [![openupm](https://img.shields.io/npm/v/com.virtualmaker.buildalon?label=openupm&registry_uri=https://package.openupm.com)](https://openupm.com/packages/com.virtualmaker.buildalon/) [![openupm](https://img.shields.io/badge/dynamic/json?color=brightgreen&label=downloads&query=%24.downloads&suffix=%2Fmonth&url=https%3A%2F%2Fpackage.openupm.com%2Fdownloads%2Fpoint%2Flast-month%2Fcom.virtualmaker.buildalon)](https://openupm.com/packages/com.virtualmaker.buildalon/)
 
 A Build Pipeline utility package for the [Unity](https://unity.com/) Game Engine.
 
@@ -28,7 +28,7 @@ The recommended installation method is though the unity package manager and [Ope
 ### Via Unity Package Manager and Git url
 
 - Open your Unity Package Manager
-- Add package from git url: `https://github.com/RageAgainstThePixel/com.utilities.buildpipeine.git#upm`
+- Add package from git url: `https://github.com/buildalon/com.virtualmaker.buildalon.git#upm`
 
 ## Documentation
 
