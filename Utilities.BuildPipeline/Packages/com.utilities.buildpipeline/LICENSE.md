@@ -1,6 +1,6 @@
 MIT License
 
-Copyright (c) 2024 Buildalon: Automate Unity
+Copyright (c) 2024 Virtual Maker Corporation
 Copyright (c) 2023 StephenHodgson
 
 Permission is hereby granted, free of charge, to any person obtaining a copy
