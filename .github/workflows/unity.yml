@@ -62,14 +62,14 @@ jobs:
         name: Project Validation
         with:
           log-name: 'project-validation'
-          args: '-quit -batchmode -executeMethod buildalon/com.virtualmaker.buildalon.UnityPlayerBuildTools.ValidateProject -importTMProEssentialsAsset'
+          args: '-quit -batchmode -executeMethod Buildalon.Editor.BuildPipeline.UnityPlayerBuildTools.ValidateProject -importTMProEssentialsAsset'
 
       - uses: buildalon/unity-action@v1
         name: '${{ matrix.build-target }}-Build'
         with:
           log-name: '${{ matrix.build-target }}-Build'
           build-target: '${{ matrix.build-target }}'
-          args: '-quit -batchmode -executeMethod buildalon/com.virtualmaker.buildalon.UnityPlayerBuildTools.StartCommandLineBuild -export'
+          args: '-quit -batchmode -executeMethod Buildalon.Editor.BuildPipeline.UnityPlayerBuildTools.StartCommandLineBuild -export'
 
       - uses: actions/upload-artifact@v4
         id: upload-artifact

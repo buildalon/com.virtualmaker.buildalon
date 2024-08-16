@@ -8,7 +8,7 @@ using UnityEngine;
 using Debug = UnityEngine.Debug;
 using Object = UnityEngine.Object;
 
-namespace Buidalon.Editor.BuildPipeline.Logging
+namespace Buildalon.Editor.BuildPipeline.Logging
 {
     /// <summary>
     /// Base abstract logger to use when creating custom loggers.

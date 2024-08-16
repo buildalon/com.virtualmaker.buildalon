@@ -4,7 +4,7 @@ using System.Diagnostics;
 using UnityEditor.Build.Reporting;
 using UnityEngine;
 
-namespace Buidalon.Editor.BuildPipeline.Logging
+namespace Buildalon.Editor.BuildPipeline.Logging
 {
     /// <summary>
     /// CI Logging interface.

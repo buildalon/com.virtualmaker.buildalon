@@ -2,7 +2,7 @@
 
 using UnityEditor;
 
-namespace Buidalon.Editor.BuildPipeline
+namespace Buildalon.Editor.BuildPipeline
 {
     public static class BuildOptionsExtensions
     {

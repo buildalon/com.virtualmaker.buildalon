@@ -6,7 +6,7 @@ using UnityEditor;
 using UnityEditor.Build.Reporting;
 using UnityEngine;
 
-namespace Buidalon.Editor.BuildPipeline
+namespace Buildalon.Editor.BuildPipeline
 {
     /// <summary>
     /// The Build Info defines common properties for a build.

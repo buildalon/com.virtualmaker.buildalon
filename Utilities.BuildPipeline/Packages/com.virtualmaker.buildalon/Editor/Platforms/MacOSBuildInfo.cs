@@ -6,7 +6,7 @@ using System;
 using UnityEditor.OSXStandalone;
 #endif
 
-namespace Buidalon.Editor.BuildPipeline
+namespace Buildalon.Editor.BuildPipeline
 {
     public class MacOSBuildInfo : BuildInfo
     {

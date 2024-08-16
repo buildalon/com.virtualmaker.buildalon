@@ -101,14 +101,14 @@ jobs:
         name: Project Validation
         with:
           log-name: 'project-validation'
-          args: '-quit -batchmode -executeMethod buildalon/com.virtualmaker.buildalon.UnityPlayerBuildTools.ValidateProject -importTMProEssentialsAsset'
+          args: '-quit -batchmode -executeMethod Buildalon.Editor.BuildPipeline.UnityPlayerBuildTools.ValidateProject -importTMProEssentialsAsset'
 
       - uses: buildalon/unity-action@v1
         name: '${{ matrix.build-target }}-Build'
         with:
           log-name: '${{ matrix.build-target }}-Build'
           build-target: '${{ matrix.build-target }}'
-          args: '-quit -batchmode -executeMethod buildalon/com.virtualmaker.buildalon.UnityPlayerBuildTools.StartCommandLineBuild -export'
+          args: '-quit -batchmode -executeMethod Buildalon.Editor.BuildPipeline.UnityPlayerBuildTools.StartCommandLineBuild -export'
 
       - uses: actions/upload-artifact@v4
         id: upload-artifact
@@ -132,12 +132,12 @@ These methods can be executed using the `-executeMethod` command line argument t
 
 | Method | Description |
 | ------ | ----------- |
-| `buildalon/com.virtualmaker.buildalon.UnityPlayerBuildTools.ValidateProject` | Validates the Unity Project assets by forcing a symbolic link sync and creates solution files. |
-| `buildalon/com.virtualmaker.buildalon.UnityPlayerBuildTools.SyncSolution` | Force Unity to update CSProj files and generates solution. |
-| `buildalon/com.virtualmaker.buildalon.UnityPlayerBuildTools.StartCommandLineBuild` | Start a build using command line arguments. |
+| `Buildalon.Editor.BuildPipeline.UnityPlayerBuildTools.ValidateProject` | Validates the Unity Project assets by forcing a symbolic link sync and creates solution files. |
+| `Buildalon.Editor.BuildPipeline.UnityPlayerBuildTools.SyncSolution` | Force Unity to update CSProj files and generates solution. |
+| `Buildalon.Editor.BuildPipeline.UnityPlayerBuildTools.StartCommandLineBuild` | Start a build using command line arguments. |
 
 ```bash
-"/path/to/Unity.exe" -projectPath "/path/to/unity/project" -quit -batchmode -executeMethod buildalon/com.virtualmaker.buildalon.UnityPlayerBuildTools.StartCommandLineBuild
+"/path/to/Unity.exe" -projectPath "/path/to/unity/project" -quit -batchmode -executeMethod Buildalon.Editor.BuildPipeline.UnityPlayerBuildTools.StartCommandLineBuild
 ```
 
 ### Additional Custom Command Line Arguments

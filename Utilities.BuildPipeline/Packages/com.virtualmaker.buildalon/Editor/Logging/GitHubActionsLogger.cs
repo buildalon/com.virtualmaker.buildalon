@@ -10,7 +10,7 @@ using UnityEditor.Build.Reporting;
 using UnityEngine;
 using Debug = UnityEngine.Debug;
 
-namespace Buidalon.Editor.BuildPipeline.Logging
+namespace Buildalon.Editor.BuildPipeline.Logging
 {
     /// <summary>
     /// Github Actions logger

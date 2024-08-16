@@ -4,7 +4,7 @@ using System;
 using System.IO;
 using UnityEditor;
 
-namespace Buidalon.Editor.BuildPipeline
+namespace Buildalon.Editor.BuildPipeline
 {
     /// <summary>
     /// BuildPipeline Editor Preferences.
