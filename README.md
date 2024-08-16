@@ -1,8 +1,10 @@
 # com.virtualmaker.buildalon
 
-[![Discord](https://img.shields.io/discord/939721153688264824.svg?label=&logo=discord&logoColor=ffffff&color=7389D8&labelColor=6A7EC2)](https://discord.gg/VM9cWJ9rjH) [![openupm](https://img.shields.io/npm/v/com.virtualmaker.buildalon?label=openupm&registry_uri=https://package.openupm.com)](https://openupm.com/packages/com.virtualmaker.buildalon/) [![openupm](https://img.shields.io/badge/dynamic/json?color=brightgreen&label=downloads&query=%24.downloads&suffix=%2Fmonth&url=https%3A%2F%2Fpackage.openupm.com%2Fdownloads%2Fpoint%2Flast-month%2Fcom.virtualmaker.buildalon)](https://openupm.com/packages/com.virtualmaker.buildalon/)
+[![Discord](https://img.shields.io/discord/939721153688264824.svg?label=&logo=discord&logoColor=ffffff&color=7389D8&labelColor=6A7EC2)](https://discord.gg/VM9cWJ9rjH) [![openupm](https://img.shields.io/npm/v/com.virtualmaker.buildalon?label=openupm&registry_uri=https://package.openupm.com)](https://openupm.com/packages/com.virtualmaker.buildalon/) [![openupm](https://img.shields.io/badge/dynamic/json?color=brightgreen&label=downloads&query=%24.downloads&suffix=%2Fmonth&url=https%3A%2F%2Fpackage.openupm.com%2Fdownloads%2Fpoint%2Flast-month%2Fcom.virtualmaker.buildalon)](https://openupm.com/packages/com.virtualmaker.buildalon/) [![marketplace](https://img.shields.io/static/v1?label=&labelColor=505050&message=Buildalon%20Actions&color=FF1E6F&logo=github-actions&logoColor=0076D6)](https://github.com/marketplace?query=buildalon)
 
 A Build Pipeline utility package for the [Unity](https://unity.com/) Game Engine.
+
+This package is designed to be use in conjunction with the [Buildalon GitHub Actions](https://github.com/marketplace?query=buildalon).
 
 ## Installing
 
@@ -32,14 +34,13 @@ The recommended installation method is though the unity package manager and [Ope
 
 ## Documentation
 
-This package is designed to be use in conjunction with the Buildalon automation.
-
 ### Example Usage
 
 #### Create Github Action Workflow
 
-1. Create a new action workflow file: `.github/workflows/unity-build.yml`
-2. Add the following content to the file:
+- Create a new action workflow file:
+  - `.github/workflows/unity-build.yml`
+- Add the following content to the file:
 
 ```yml
 name: unity-build
@@ -77,8 +78,7 @@ jobs:
             build-target: StandaloneOSX
     steps:
       - uses: actions/checkout@v4
-        with:
-          clean: true
+
         # Installs the Unity Editor based on your project version text file
         # sets -> env.UNITY_EDITOR_PATH
         # sets -> env.UNITY_PROJECT_PATH
