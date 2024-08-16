@@ -1,14 +1,16 @@
-# com.utilities.buildpipeline
+# com.virtualmaker.buildalon
 
-[![Discord](https://img.shields.io/discord/855294214065487932.svg?label=&logo=discord&logoColor=ffffff&color=7389D8&labelColor=6A7EC2)](https://discord.gg/xQgMW9ufN4) [![openupm](https://img.shields.io/npm/v/com.utilities.buildpipeline?label=openupm&registry_uri=https://package.openupm.com)](https://openupm.com/packages/com.utilities.buildpipeline/) [![openupm](https://img.shields.io/badge/dynamic/json?color=brightgreen&label=downloads&query=%24.downloads&suffix=%2Fmonth&url=https%3A%2F%2Fpackage.openupm.com%2Fdownloads%2Fpoint%2Flast-month%2Fcom.utilities.buildpipeline)](https://openupm.com/packages/com.utilities.buildpipeline/) [![marketplace](https://img.shields.io/static/v1?label=&labelColor=505050&message=Unity%20Build%20Pipeline%20Utility&color=0076D6&logo=github-actions&logoColor=0076D6)](https://github.com/marketplace/actions/unity-build-pipeline-utility)
+[![Discord](https://img.shields.io/discord/939721153688264824.svg?label=&logo=discord&logoColor=ffffff&color=7389D8&labelColor=6A7EC2)](https://discord.gg/VM9cWJ9rjH) [![openupm](https://img.shields.io/npm/v/com.virtualmaker.buildalon?label=openupm&registry_uri=https://package.openupm.com)](https://openupm.com/packages/com.virtualmaker.buildalon/) [![openupm](https://img.shields.io/badge/dynamic/json?color=brightgreen&label=downloads&query=%24.downloads&suffix=%2Fmonth&url=https%3A%2F%2Fpackage.openupm.com%2Fdownloads%2Fpoint%2Flast-month%2Fcom.virtualmaker.buildalon)](https://openupm.com/packages/com.virtualmaker.buildalon/) [![marketplace](https://img.shields.io/static/v1?label=&labelColor=505050&message=Buildalon%20Actions&color=FF1E6F&logo=github-actions&logoColor=0076D6)](https://github.com/marketplace?query=buildalon)
 
 A Build Pipeline utility package for the [Unity](https://unity.com/) Game Engine.
+
+This package is designed to be use in conjunction with the [Buildalon GitHub Actions](https://github.com/marketplace?query=buildalon).
 
 ## Installing
 
 Requires Unity 2019.4 LTS or higher.
 
-The recommended installation method is though the unity package manager and [OpenUPM](https://openupm.com/packages/com.openai.unity).
+The recommended installation method is though the unity package manager and [OpenUPM](https://openupm.com/packages/com.virtualmaker.buildalon).
 
 ### Via Unity Package Manager and OpenUPM
 
@@ -17,35 +19,31 @@ The recommended installation method is though the unity package manager and [Ope
   - Name: `OpenUPM`
   - URL: `https://package.openupm.com`
   - Scope(s):
-    - `com.utilities`
+    - `com.virtualmaker`
 
 ![scoped-registries](images/package-manager-scopes.png)
 
 - Open the Unity Package Manager window
 - Change the Registry from Unity to `My Registries`
-- Add the `Utilities.BuildPipeline` package
+- Add the `Buildalon` package
 
 ### Via Unity Package Manager and Git url
 
 - Open your Unity Package Manager
-- Add package from git url: `https://github.com/RageAgainstThePixel/com.utilities.buildpipeine.git#upm`
+- Add package from git url: `https://github.com/buildalon/com.virtualmaker.buildalon.git#upm`
 
 ## Documentation
-
-This package is designed to be use in conjunction with a CI/CD pipeline, such as [![marketplace](https://img.shields.io/static/v1?label=&labelColor=505050&message=Unity%20Build%20Pipeline%20Utility&color=0076D6&logo=github-actions&logoColor=0076D6)](https://github.com/marketplace/actions/unity-build-pipeline-utility).
 
 ### Example Usage
 
 #### Create Github Action Workflow
 
-1. Create a new action workflow file using [![marketplace](https://img.shields.io/static/v1?label=&labelColor=505050&message=Unity%20Build%20Pipeline%20Utility&color=0076D6&logo=github-actions&logoColor=0076D6)](https://github.com/marketplace/actions/unity-build-pipeline-utility)
-`.github/workflows/unity-build.yml`
-
-2. Add the following content to the file:
+- Create a new action workflow file:
+  - `.github/workflows/unity-build.yml`
+- Add the following content to the file:
 
 ```yml
 name: unity-build
-
 on:
   push:
     branches:
@@ -73,30 +71,52 @@ jobs:
             build-target: StandaloneWindows64
           - os: macos-13
             build-target: StandaloneOSX
-
     steps:
       - uses: actions/checkout@v4
 
         # Installs the Unity Editor based on your project version text file
         # sets -> env.UNITY_EDITOR_PATH
         # sets -> env.UNITY_PROJECT_PATH
-      - uses: RageAgainstThePixel/unity-setup@v1
+      - uses: buildalon/unity-setup@v1
         with:
           unity-version: ${{ matrix.unity-versions }}
           build-targets: ${{ matrix.build-target }}
 
         # Activates the installation with the provided credentials
-      - uses: RageAgainstThePixel/activate-unity-license@v1
+      - uses: buildalon/activate-unity-license@v1
         with:
           license: 'Personal' # Choose license type to use [ Personal, Professional ]
           username: ${{ secrets.UNITY_USERNAME }}
           password: ${{ secrets.UNITY_PASSWORD }}
           # serial: ${{ secrets.UNITY_SERIAL }} # Required for pro activations
 
-      - name: Unity Build (${{ matrix.build-target }})
-        uses: RageAgainstThePixel/unity-build@v1
+      - uses: buildalon/unity-action@v1
+        name: Project Validation
         with:
-          build-target: ${{ matrix.build-target }}
+          log-name: 'project-validation'
+          args: '-quit -batchmode -executeMethod Buildalon.Editor.BuildPipeline.UnityPlayerBuildTools.ValidateProject -importTMProEssentialsAsset'
+
+      - uses: buildalon/unity-action@v1
+        name: '${{ matrix.build-target }}-Build'
+        with:
+          log-name: '${{ matrix.build-target }}-Build'
+          build-target: '${{ matrix.build-target }}'
+          args: '-quit -batchmode -executeMethod Buildalon.Editor.BuildPipeline.UnityPlayerBuildTools.StartCommandLineBuild -export'
+
+      - uses: actions/upload-artifact@v4
+        id: upload-artifact
+        name: 'Upload ${{ matrix.build-target }} Artifacts'
+        if: success() || failure()
+        with:
+          compression-level: 0
+          retention-days: 1
+          name: '${{ github.run_number }}.${{ github.run_attempt }}-${{ matrix.os }} ${{ matrix.unity-versions }} ${{ matrix.build-target }}-Artifacts'
+          path: |
+            ${{ github.workspace }}/**/*.log
+            ${{ env.UNITY_PROJECT_PATH || github.workspace }}/Builds/${{ matrix.build-target }}/**/*
+            !${{ env.UNITY_PROJECT_PATH || github.workspace }}/Library/**/*
+            !/**/*_BackUpThisFolder_ButDontShipItWithYourGame/**
+            !/**/*_BurstDebugInformation_DoNotShip/**
 ```
 
 ### Executable Methods
@@ -105,12 +125,12 @@ These methods can be executed using the `-executeMethod` command line argument t
 
 | Method | Description |
 | ------ | ----------- |
-| `Utilities.Editor.BuildPipeline.UnityPlayerBuildTools.ValidateProject` | Validates the Unity Project assets by forcing a symbolic link sync and creates solution files. |
-| `Utilities.Editor.BuildPipeline.UnityPlayerBuildTools.SyncSolution` | Force Unity to update CSProj files and generates solution. |
-| `Utilities.Editor.BuildPipeline.UnityPlayerBuildTools.StartCommandLineBuild` | Start a build using command line arguments. |
+| `Buildalon.Editor.BuildPipeline.UnityPlayerBuildTools.ValidateProject` | Validates the Unity Project assets by forcing a symbolic link sync and creates solution files. |
+| `Buildalon.Editor.BuildPipeline.UnityPlayerBuildTools.SyncSolution` | Force Unity to update CSProj files and generates solution. |
+| `Buildalon.Editor.BuildPipeline.UnityPlayerBuildTools.StartCommandLineBuild` | Start a build using command line arguments. |
 
 ```bash
-"/path/to/Unity.exe" -projectPath "/path/to/unity/project" -quit -batchmode -executeMethod Utilities.Editor.BuildPipeline.UnityPlayerBuildTools.StartCommandLineBuild
+"/path/to/Unity.exe" -projectPath "/path/to/unity/project" -quit -batchmode -executeMethod Buildalon.Editor.BuildPipeline.UnityPlayerBuildTools.StartCommandLineBuild
 ```
 
 #### Project Validation Command Line Arguments
