@@ -1,6 +1,5 @@
 // Licensed under the MIT License. See LICENSE in the project root for license information.
 
-using Buildalon.Editor.BuildPipeline.Logging;
 using JetBrains.Annotations;
 using System;
 using System.Collections.Generic;
@@ -12,9 +11,10 @@ using UnityEditor;
 using UnityEditor.Build;
 using UnityEditor.Build.Reporting;
 using UnityEngine;
+using Utilities.Editor.BuildPipeline.Logging;
 using Debug = UnityEngine.Debug;
 
-namespace Buildalon.Editor.BuildPipeline
+namespace Utilities.Editor.BuildPipeline
 {
     /// <summary>
     /// Cross-platform player build tools
@@ -49,12 +49,12 @@ namespace Buildalon.Editor.BuildPipeline
                         case BuildTarget.Android:
                             buildInfoInstance = new AndroidBuildInfo();
                             break;
-                        case BuildTarget.iOS:
-                            buildInfoInstance = new IOSBuildInfo();
-                            break;
                         // TODO: Add additional platform specific build info classes as needed
                         //case BuildTarget.StandaloneWindows:
                         //case BuildTarget.StandaloneWindows64:
+                        //    break;
+                        //case BuildTarget.iOS:
+                        //    break;
                         //    break;
                         //case BuildTarget.WebGL:
                         //    break;

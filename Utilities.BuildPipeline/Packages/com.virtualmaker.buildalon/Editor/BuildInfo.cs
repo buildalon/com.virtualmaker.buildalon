@@ -1,6 +1,5 @@
 // Licensed under the MIT License. See LICENSE in the project root for license information.
 
-using Buildalon.Editor.BuildPipeline.Logging;
 using System;
 using System.Collections.Generic;
 using System.IO;
@@ -8,8 +7,9 @@ using System.Linq;
 using UnityEditor;
 using UnityEditor.Build.Reporting;
 using UnityEngine;
+using Utilities.Editor.BuildPipeline.Logging;
 
-namespace Buildalon.Editor.BuildPipeline
+namespace Utilities.Editor.BuildPipeline
 {
     /// <summary>
     /// A generic build info class.
@@ -118,13 +118,13 @@ namespace Buildalon.Editor.BuildPipeline
                     case BuildTarget.StandaloneWindows:
                     case BuildTarget.StandaloneWindows64:
 #if PLATFORM_STANDALONE_WIN
-                        return UnityEditor.WindowsStandalone.UserBuildSettings.createSolution ? $"{Path.DirectorySeparatorChar}{Application.productName}" : ".exe";
+                        return UnityEditor.WindowsStandalone.UserBuildSettings.createSolution ? $"{Path.DirectorySeparatorChar}{BundleIdentifier}" : ".exe";
 #else
                         return ".exe";
 #endif
                     case BuildTarget.StandaloneOSX:
 #if PLATFORM_STANDALONE_OSX
-                        return UnityEditor.OSXStandalone.UserBuildSettings.createXcodeProject ? $"{Path.DirectorySeparatorChar}{Application.productName}" : ".app";
+                        return UnityEditor.OSXStandalone.UserBuildSettings.createXcodeProject ? $"{Path.DirectorySeparatorChar}{Application.productName}.xcodeproj" : ".app";
 #else
                         return ".app";
 #endif
