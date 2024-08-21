@@ -177,6 +177,7 @@ PlayerSettings:
     Android: com.virtualmaker.buildalon
     Lumin: com.virtualmaker.buildalon
     Standalone: com.virtualmaker.buildalon
+    iPhone: com.virtualmaker.buildalon
   buildNumber:
     Standalone: 0
     iPhone: 0
