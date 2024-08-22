@@ -3,7 +3,7 @@
 using UnityEditor;
 using UnityEditor.Build.Reporting;
 
-namespace Buildalon.Editor.BuildPipeline
+namespace Utilities.Editor.BuildPipeline
 {
     public class IOSBuildInfo : BuildInfo
     {
