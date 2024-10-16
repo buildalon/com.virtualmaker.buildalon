@@ -473,7 +473,7 @@ namespace Buildalon.Editor.BuildPipeline
             if (defaultIcons.Length == 0 || defaultIcons[0] == null)
             {
                 Debug.LogWarning("No app icon set, setting a default...");
-                var icon = AssetDatabase.LoadAssetAtPath<Texture2D>("Packages/com.utilities.buildpipeline/Editor/Icons/UnityLogo.png");
+                var icon = AssetDatabase.LoadAssetAtPath<Texture2D>("Packages/com.virtualmaker.buildalon/Editor/Icons/UnityLogo.png");
 
                 if (icon == null)
                 {
