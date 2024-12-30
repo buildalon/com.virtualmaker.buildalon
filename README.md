@@ -8,6 +8,8 @@
 
 This package extends Unity with command line arguments that are equivalent to the options in the Unity build window. You can use it to automate building Unity in any continuous integration and continuous deployment (CI/CD) environment. For the [Buildalon GitHub Actions](https://github.com/marketplace?query=buildalon) this package is designed to be used in conjunction with, this package also adds logging and summary utilities.
 
+If you're new to CI/CD, you can **learn how setup build automation in 1 minute at [buildalon.com](https://www.buildalon.com/?utm_source=plugin_readme).**
+
 ## Installing
 
 Requires Unity 2019.4 LTS or higher.
