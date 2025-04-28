@@ -87,7 +87,7 @@ jobs:
         # sets -> env.UNITY_PROJECT_PATH
       - uses: buildalon/unity-setup@v1
         with:
-          unity-version: ${{ matrix.unity-version }}
+          unity-version: ${{ matrix.unity-versions }}
           build-targets: ${{ matrix.build-target }}
 
         # Activates the installation with the provided credentials
@@ -199,7 +199,7 @@ In addition to any already defined [Unity Editor command line arguments](https:/
 | `-keyaliasName` | Name of the key to use when signing. |
 | `-keyaliasPass` | Sets the key alias password. |
 | `-symbols` | Sets the symbol creation mode. Can be: `public`, `debugging`, or `disabled`. |
-| `-versionCode` | Sets the version code of the application. Must be an integer. ***Deprecated, use `versionNumber` instead*** |
+| `-versionCode` | Sets the version code of the application. Must be an integer. ***Deprecated, use `buildNumber` instead*** |
 
 ##### Apple Device Command Line Args
 
