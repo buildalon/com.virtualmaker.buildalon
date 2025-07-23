@@ -6,7 +6,7 @@ using System.Linq;
 using UnityEditor;
 using UnityEngine;
 
-namespace Utilities.Editor.BuildPipeline
+namespace Buildalon.Editor.BuildPipeline
 {
     internal static class TextureExtensions
     {
