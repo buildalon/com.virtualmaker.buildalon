@@ -220,6 +220,8 @@ namespace Buildalon.Editor.BuildPipeline
                         EditorUserBuildSettings.development = true;
                         BuildOptions = BuildOptions.SetFlag(BuildOptions.Development);
                         break;
+                    case "-patch":
+                        BuildOptions = BuildOptions.SetFlag(BuildOptions.PatchPackage);
                     case "-colorSpace":
                         ColorSpace = (ColorSpace)Enum.Parse(typeof(ColorSpace), arguments[++i]);
                         break;
