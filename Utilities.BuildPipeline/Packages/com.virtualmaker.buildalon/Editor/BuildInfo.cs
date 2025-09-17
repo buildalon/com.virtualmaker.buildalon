@@ -222,6 +222,7 @@ namespace Buildalon.Editor.BuildPipeline
                         break;
                     case "-patch":
                         BuildOptions = BuildOptions.SetFlag(BuildOptions.PatchPackage);
+                        break;
                     case "-colorSpace":
                         ColorSpace = (ColorSpace)Enum.Parse(typeof(ColorSpace), arguments[++i]);
                         break;
