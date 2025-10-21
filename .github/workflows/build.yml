@@ -23,7 +23,6 @@ jobs:
       contents: read
     env:
       UNITY_PROJECT_PATH: '' # set by unity-setup action
-    timeout-minutes: 20
     steps:
       - uses: actions/checkout@v5
         with:
