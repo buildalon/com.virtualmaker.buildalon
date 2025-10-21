@@ -23,18 +23,17 @@ jobs:
       contents: read
     env:
       UNITY_PROJECT_PATH: '' # set by unity-setup action
-    timeout-minutes: 20
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v5
         with:
           clean: true
-      - uses: Buildalon/unity-setup@v1
+      - uses: Buildalon/unity-setup@v2
         with:
           unity-version: ${{ matrix.unity-version }}
           build-targets: ${{ matrix.build-target }}
-      - uses: Buildalon/activate-unity-license@v1
+      - uses: Buildalon/activate-unity-license@v2
         with:
-          license: 'Personal'
+          license: personal
           username: ${{ secrets.UNITY_USERNAME }}
           password: ${{ secrets.UNITY_PASSWORD }}
       - uses: Buildalon/unity-action@v2
@@ -50,7 +49,7 @@ jobs:
           build-target: ${{ matrix.build-target }}
           project-path: ${{ env.UNITY_PROJECT_PATH }}
           log-name: ${{ matrix.build-target }}-Build
-          args: -quit -nographics -batchmode -executeMethod Buildalon.Editor.BuildPipeline.UnityPlayerBuildTools.StartCommandLineBuild
+          args: -quit -nographics -batchmode -executeMethod Buildalon.Editor.BuildPipeline.UnityPlayerBuildTools.StartCommandLineBuild ${{ matrix.build-args }}
       - name: Validate Text Mesh Pro Resources
         shell: bash
         run: |
@@ -74,5 +73,5 @@ jobs:
         name: Upload Artifacts
         if: failure()
         with:
-          name: ${{ github.run_number }}.${{ github.run_attempt }} ${{ matrix.unity-version }} ${{ matrix.name }} Artifacts
+          name: ${{ github.run_number }}.${{ github.run_attempt }} ${{ matrix.os }} ${{ matrix.unity-version }} ${{ matrix.build-target }} Artifacts
           path: ${{ github.workspace }}/**/*.log
