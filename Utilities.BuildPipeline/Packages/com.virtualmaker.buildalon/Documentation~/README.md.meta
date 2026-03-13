@@ -1,0 +1,14 @@
+fileFormatVersion: 2
+guid: 20f5345ec249e18478cc482defae1a82
+TextScriptImporter:
+  externalObjects: {}
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 
+AssetOrigin:
+  serializedVersion: 1
+  productId: 288779
+  packageName: Buildalon Automation for CI/CD
+  packageVersion: 1.1.4
+  assetPath: Packages/com.virtualmaker.buildalon/Documentation~/README.md
+  uploadId: 712540
