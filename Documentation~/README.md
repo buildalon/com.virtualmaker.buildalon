@@ -1,10 +1,14 @@
 # com.virtualmaker.buildalon
 
+**[buildalon.com](https://www.buildalon.com?utm_source=plugin_readme) | [Documentation](https://www.buildalon.com/docs/?utm_source=plugin_readme)**
+
 [![Discord](https://img.shields.io/discord/939721153688264824.svg?label=&logo=discord&logoColor=ffffff&color=7389D8&labelColor=6A7EC2)](https://discord.gg/VM9cWJ9rjH) [![openupm](https://img.shields.io/npm/v/com.virtualmaker.buildalon?label=openupm&registry_uri=https://package.openupm.com)](https://openupm.com/packages/com.virtualmaker.buildalon/) [![openupm](https://img.shields.io/badge/dynamic/json?color=brightgreen&label=downloads&query=%24.downloads&suffix=%2Fmonth&url=https%3A%2F%2Fpackage.openupm.com%2Fdownloads%2Fpoint%2Flast-month%2Fcom.virtualmaker.buildalon)](https://openupm.com/packages/com.virtualmaker.buildalon/) [![marketplace](https://img.shields.io/static/v1?label=&labelColor=505050&message=Buildalon%20Actions&color=FF1E6F&logo=github-actions&logoColor=0076D6)](https://github.com/marketplace?query=buildalon)
 
-A Build Pipeline utility package for the [Unity](https://unity.com/) Game Engine.
+**Buildalon** is an end-to-end CI/CD solution designed for [Unity](https://unity.com/) developers.
 
-This package is designed to be use in conjunction with the [Buildalon GitHub Actions](https://github.com/marketplace?query=buildalon).
+This package extends Unity with command line arguments that are equivalent to the options in the Unity build window. You can use it to automate building Unity in any continuous integration and continuous deployment (CI/CD) environments. Use the [Buildalon GitHub Actions](https://buildalon.com/docs/actions?utm_source=plugin_readme) with this package to get setup build automation with clear logging and summary.
+
+If you're new to CI/CD, you can **learn how to setup build automation in 1 minute at [buildalon.com](https://www.buildalon.com/?utm_source=plugin_readme).**
 
 ## Installing
 
@@ -46,21 +50,16 @@ openupm add com.virtualmaker.buildalon
 
 #### Create Github Action Workflow
 
-- Create a new action workflow file:
-  - `.github/workflows/unity-build.yml`
-- Add the following content to the file:
+Create a new workflow file in your Unity project repository at `.github/workflows/build.yml` with the following content:
 
 ```yml
 name: unity-build
 on:
   push:
-    branches:
-      - 'main'
+    branches: ['main']
   pull_request:
-    branches:
-      - '*'
-  # Allows you to run this workflow manually from the Actions tab
-  workflow_dispatch:
+    branches: ['*']
+  workflow_dispatch: # Allows you to run this workflow manually from the Actions tab
 concurrency:
   group: ${{ github.workflow }}-${{ github.ref }}
   cancel-in-progress: true
@@ -80,53 +79,45 @@ jobs:
           - os: macos-latest
             build-target: StandaloneOSX
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v6
 
         # Installs the Unity Editor based on your project version text file
         # sets -> env.UNITY_EDITOR_PATH
         # sets -> env.UNITY_PROJECT_PATH
-      - uses: buildalon/unity-setup@v1
+      - uses: buildalon/unity-setup@v2
+        id: unity-setup # used to get project path output in later steps
         with:
           unity-version: ${{ matrix.unity-versions }}
           build-targets: ${{ matrix.build-target }}
+          version-file: path/to/your/ProjectSettings/ProjectVersion.txt # optional, this step will attempt to auto detect if not provided
 
         # Activates the installation with the provided credentials
-      - uses: buildalon/activate-unity-license@v1
+      - uses: buildalon/activate-unity-license@v2
         with:
           license: 'Personal' # Choose license type to use [ Personal, Professional ]
           username: ${{ secrets.UNITY_USERNAME }}
           password: ${{ secrets.UNITY_PASSWORD }}
           # serial: ${{ secrets.UNITY_SERIAL }} # Required for pro activations
 
-      - uses: buildalon/unity-action@v1
-        name: Project Validation
+      - uses: buildalon/unity-action@v3
+        name: ${{ matrix.build-target }}-Validate
         with:
-          log-name: 'project-validation'
-          build-target: '${{ matrix.build-target }}'
-          args: '-quit -batchmode -executeMethod Buildalon.Editor.BuildPipeline.UnityPlayerBuildTools.ValidateProject -importTMProEssentialsAsset'
+          log-name: ${{ matrix.build-target }}-Validate
+          build-target: ${{ matrix.build-target }}
+          project-path: ${{ steps.unity-setup.outputs.unity-project-path }}
+          args: -quit -nographics -batchmode -executeMethod Buildalon.Editor.BuildPipeline.UnityPlayerBuildTools.ValidateProject -importTMProEssentialsAsset
 
-      - uses: buildalon/unity-action@v1
-        name: '${{ matrix.build-target }}-Build'
+      - uses: buildalon/unity-action@v3
+        name: ${{ matrix.build-target }}-Build
         with:
-          log-name: '${{ matrix.build-target }}-Build'
-          build-target: '${{ matrix.build-target }}'
-          args: '-quit -batchmode -executeMethod Buildalon.Editor.BuildPipeline.UnityPlayerBuildTools.StartCommandLineBuild -export'
-
-      - uses: actions/upload-artifact@v4
-        id: upload-artifact
-        name: 'Upload ${{ matrix.build-target }} Artifacts'
-        if: success() || failure()
-        with:
-          compression-level: 0
-          retention-days: 1
-          name: '${{ github.run_number }}.${{ github.run_attempt }}-${{ matrix.os }} ${{ matrix.unity-version }} ${{ matrix.build-target }}-Artifacts'
-          path: |
-            ${{ github.workspace }}/**/*.log
-            ${{ env.UNITY_PROJECT_PATH || github.workspace }}/Builds/${{ matrix.build-target }}/**/*
-            !${{ env.UNITY_PROJECT_PATH || github.workspace }}/Library/**/*
-            !/**/*_BackUpThisFolder_ButDontShipItWithYourGame/**
-            !/**/*_BurstDebugInformation_DoNotShip/**
+          log-name: ${{ matrix.build-target }}-Build
+          build-target: ${{ matrix.build-target }}
+          project-path: ${{ steps.unity-setup.outputs.unity-project-path }}
+          args: -quit -nographics -batchmode -executeMethod Buildalon.Editor.BuildPipeline.UnityPlayerBuildTools.StartCommandLineBuild ${{ matrix.build-args }}
 ```
+
+> [!NOTE]
+> Embedded CI Logging in GitHub Actions and Azure DevOps can be disabled by adding the `DISABLE_EMBEDDED_BUILD_PIPELINE_PLUGIN_LOGGING` environment variable to the build step with a value of `true` or `1`.
 
 ### Executable Methods
 
