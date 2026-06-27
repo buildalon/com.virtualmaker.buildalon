@@ -157,6 +157,7 @@ In addition to any already defined [Unity Editor command line arguments](https:/
 | `-versionName` | Sets the version of the application. Value must be string. |
 | `-buildNumber` | Sets the version build number of the application. (For Android, this must be an integer.) |
 | `-bundleIdentifier` | Sets the bundle identifier of the application. |
+| `-productName` | Sets the product name and generated build artifact name. By default, build artifact names continue to use the bundle identifier. |
 | `-sceneList` | Sets the scenes of the application, list as CSV. |
 | `-sceneListFile` | Sets the scenes of the application, list as JSON. |
 | `-buildOutputDirectory` | Sets the output directory for the build. |
