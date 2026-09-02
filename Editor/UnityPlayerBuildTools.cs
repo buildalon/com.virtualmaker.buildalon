@@ -175,37 +175,9 @@ namespace Buildalon.Editor.BuildPipeline
             if (BuildInfo == null) { throw new ArgumentNullException(nameof(BuildInfo)); }
             EditorUtility.DisplayProgressBar($"{BuildInfo.BuildTarget} Build Pipeline", "Gathering Build Data...", 0.25f);
 
-            if (BuildInfo.IsCommandLine)
-            {
-                BuildInfo.ParseCommandLineArgs();
-            }
-
-            // use https://semver.org/
-            // major.minor.build
-            var version = new Version(
-                (buildInfo.Version == null || buildInfo.AutoIncrement)
-                    ? string.IsNullOrWhiteSpace(PlayerSettings.bundleVersion)
-                        ? GetValidVersionString(Application.version)
-                        : GetValidVersionString(PlayerSettings.bundleVersion)
-                    : GetValidVersionString(buildInfo.Version.ToString()));
-
-            // Only auto incitement if the version wasn't specified in the build info.
-            if (buildInfo.Version == null &&
-                buildInfo.AutoIncrement)
-            {
-                version = new Version(version.Major, version.Minor, version.Build + 1);
-            }
-
-            // Updates the Application.version and syncs Android and iOS bundle version strings
-            PlayerSettings.bundleVersion = version.ToString();
-            // Update Lumin bc the Application.version isn't synced like Android & iOS
-            PlayerSettings.Lumin.versionName = PlayerSettings.bundleVersion;
-            // Update WSA bc the Application.version isn't synced like Android & iOS
-            PlayerSettings.WSA.packageVersion = new Version(version.Major, version.Minor, version.Build, 0);
-#if UNITY_2022_3_OR_NEWER
-            PlayerSettings.visionOSBundleVersion = PlayerSettings.bundleVersion;
-#endif // UNITY_2022_3_OR_NEWER
-
+            // Snapshot before CLI parse — setters may mutate PlayerSettings immediately.
+            var oldProductName = PlayerSettings.productName;
+            var oldColorSpace = PlayerSettings.colorSpace;
             var buildTargetGroup = UnityEditor.BuildPipeline.GetBuildTargetGroup(buildInfo.BuildTarget);
 #if UNITY_2023_1_OR_NEWER
             var oldBuildIdentifier = PlayerSettings.GetApplicationIdentifier(NamedBuildTarget.FromBuildTargetGroup(buildTargetGroup));
@@ -213,81 +185,110 @@ namespace Buildalon.Editor.BuildPipeline
             var oldBuildIdentifier = PlayerSettings.GetApplicationIdentifier(buildTargetGroup);
 #endif // UNITY_2023_1_OR_NEWER
 
-            if (!string.IsNullOrWhiteSpace(buildInfo.BundleIdentifier))
-            {
-#if UNITY_2023_1_OR_NEWER
-                PlayerSettings.SetApplicationIdentifier(NamedBuildTarget.FromBuildTargetGroup(buildTargetGroup), buildInfo.BundleIdentifier);
-#else
-                PlayerSettings.SetApplicationIdentifier(buildTargetGroup, buildInfo.BundleIdentifier);
-#endif // UNITY_2023_1_OR_NEWER
-            }
-
-#if UNITY_2023_1_OR_NEWER
-            var playerBuildSymbols = PlayerSettings.GetScriptingDefineSymbols(NamedBuildTarget.FromBuildTargetGroup(buildTargetGroup));
-#else
-            var playerBuildSymbols = PlayerSettings.GetScriptingDefineSymbolsForGroup(buildTargetGroup);
-#endif // UNITY_2023_1_OR_NEWER
-
-            if (!string.IsNullOrEmpty(playerBuildSymbols))
-            {
-                if (buildInfo.HasConfigurationSymbol())
-                {
-                    buildInfo.AppendWithoutConfigurationSymbols(playerBuildSymbols);
-                }
-                else
-                {
-                    buildInfo.AppendSymbols(playerBuildSymbols.Split(';'));
-                }
-            }
-
-            if (!string.IsNullOrEmpty(buildInfo.BuildSymbols))
-            {
-#if UNITY_2023_1_OR_NEWER
-                PlayerSettings.SetScriptingDefineSymbols(NamedBuildTarget.FromBuildTargetGroup(buildTargetGroup), buildInfo.BuildSymbols);
-#else
-                PlayerSettings.SetScriptingDefineSymbolsForGroup(buildTargetGroup, buildInfo.BuildSymbols);
-#endif // UNITY_2023_1_OR_NEWER
-            }
-
-            if ((buildInfo.BuildOptions & BuildOptions.Development) == BuildOptions.Development &&
-                !buildInfo.HasConfigurationSymbol())
-            {
-                buildInfo.AppendSymbols(BuildSymbolDebug);
-            }
-
-            if (buildInfo.HasAnySymbols(BuildSymbolDebug))
-            {
-                buildInfo.BuildOptions |= BuildOptions.Development | BuildOptions.AllowDebugging;
-            }
-
-            if (buildInfo.HasAnySymbols(BuildSymbolRelease))
-            {
-                // Unity automatically adds the DEBUG symbol if the BuildOptions.Development flag is
-                // specified. In order to have debug symbols and the RELEASE symbols we have to
-                // inject the symbol Unity relies on to enable the /debug+ flag of csc.exe which is "DEVELOPMENT_BUILD"
-                buildInfo.AppendSymbols("DEVELOPMENT_BUILD");
-            }
-
-            var oldColorSpace = PlayerSettings.colorSpace;
-
-            if (buildInfo.ColorSpace.HasValue)
-            {
-                Debug.Log($"Color Space: {buildInfo.ColorSpace.Value}");
-                PlayerSettings.colorSpace = buildInfo.ColorSpace.Value;
-            }
-
-            BuildReport buildReport;
-
-            if (Application.isBatchMode)
-            {
-                Debug.Log($"Build Target: {buildInfo.BuildTarget}");
-                Debug.Log($"Build Options: {buildInfo.BuildOptions}");
-                Debug.Log($"Target output: \"{buildInfo.FullOutputPath}\"");
-                Debug.Log($"Scenes in build:\n{string.Join("\n    ", buildInfo.Scenes.Select(scene => scene.path))}");
-            }
+            BuildReport buildReport = null;
 
             try
             {
+                if (BuildInfo.IsCommandLine)
+                {
+                    BuildInfo.ParseCommandLineArgs();
+                }
+
+                // use https://semver.org/
+                // major.minor.build
+                var version = new Version(
+                    (buildInfo.Version == null || buildInfo.AutoIncrement)
+                        ? string.IsNullOrWhiteSpace(PlayerSettings.bundleVersion)
+                            ? GetValidVersionString(Application.version)
+                            : GetValidVersionString(PlayerSettings.bundleVersion)
+                        : GetValidVersionString(buildInfo.Version.ToString()));
+
+                // Only auto incitement if the version wasn't specified in the build info.
+                if (buildInfo.Version == null &&
+                    buildInfo.AutoIncrement)
+                {
+                    version = new Version(version.Major, version.Minor, version.Build + 1);
+                }
+
+                // Updates the Application.version and syncs Android and iOS bundle version strings
+                PlayerSettings.bundleVersion = version.ToString();
+                // Update Lumin bc the Application.version isn't synced like Android & iOS
+                PlayerSettings.Lumin.versionName = PlayerSettings.bundleVersion;
+                // Update WSA bc the Application.version isn't synced like Android & iOS
+                PlayerSettings.WSA.packageVersion = new Version(version.Major, version.Minor, version.Build, 0);
+#if UNITY_2022_3_OR_NEWER
+                PlayerSettings.visionOSBundleVersion = PlayerSettings.bundleVersion;
+#endif // UNITY_2022_3_OR_NEWER
+
+                if (!string.IsNullOrWhiteSpace(buildInfo.BundleIdentifier))
+                {
+#if UNITY_2023_1_OR_NEWER
+                    PlayerSettings.SetApplicationIdentifier(NamedBuildTarget.FromBuildTargetGroup(buildTargetGroup), buildInfo.BundleIdentifier);
+#else
+                    PlayerSettings.SetApplicationIdentifier(buildTargetGroup, buildInfo.BundleIdentifier);
+#endif // UNITY_2023_1_OR_NEWER
+                }
+
+#if UNITY_2023_1_OR_NEWER
+                var playerBuildSymbols = PlayerSettings.GetScriptingDefineSymbols(NamedBuildTarget.FromBuildTargetGroup(buildTargetGroup));
+#else
+                var playerBuildSymbols = PlayerSettings.GetScriptingDefineSymbolsForGroup(buildTargetGroup);
+#endif // UNITY_2023_1_OR_NEWER
+
+                if (!string.IsNullOrEmpty(playerBuildSymbols))
+                {
+                    if (buildInfo.HasConfigurationSymbol())
+                    {
+                        buildInfo.AppendWithoutConfigurationSymbols(playerBuildSymbols);
+                    }
+                    else
+                    {
+                        buildInfo.AppendSymbols(playerBuildSymbols.Split(';'));
+                    }
+                }
+
+                if (!string.IsNullOrEmpty(buildInfo.BuildSymbols))
+                {
+#if UNITY_2023_1_OR_NEWER
+                    PlayerSettings.SetScriptingDefineSymbols(NamedBuildTarget.FromBuildTargetGroup(buildTargetGroup), buildInfo.BuildSymbols);
+#else
+                    PlayerSettings.SetScriptingDefineSymbolsForGroup(buildTargetGroup, buildInfo.BuildSymbols);
+#endif // UNITY_2023_1_OR_NEWER
+                }
+
+                if ((buildInfo.BuildOptions & BuildOptions.Development) == BuildOptions.Development &&
+                    !buildInfo.HasConfigurationSymbol())
+                {
+                    buildInfo.AppendSymbols(BuildSymbolDebug);
+                }
+
+                if (buildInfo.HasAnySymbols(BuildSymbolDebug))
+                {
+                    buildInfo.BuildOptions |= BuildOptions.Development | BuildOptions.AllowDebugging;
+                }
+
+                if (buildInfo.HasAnySymbols(BuildSymbolRelease))
+                {
+                    // Unity automatically adds the DEBUG symbol if the BuildOptions.Development flag is
+                    // specified. In order to have debug symbols and the RELEASE symbols we have to
+                    // inject the symbol Unity relies on to enable the /debug+ flag of csc.exe which is "DEVELOPMENT_BUILD"
+                    buildInfo.AppendSymbols("DEVELOPMENT_BUILD");
+                }
+
+                if (buildInfo.ColorSpace.HasValue)
+                {
+                    Debug.Log($"Color Space: {buildInfo.ColorSpace.Value}");
+                    PlayerSettings.colorSpace = buildInfo.ColorSpace.Value;
+                }
+
+                if (Application.isBatchMode)
+                {
+                    Debug.Log($"Build Target: {buildInfo.BuildTarget}");
+                    Debug.Log($"Build Options: {buildInfo.BuildOptions}");
+                    Debug.Log($"Target output: \"{buildInfo.FullOutputPath}\"");
+                    Debug.Log($"Scenes in build:\n{string.Join("\n    ", buildInfo.Scenes.Select(scene => scene.path))}");
+                }
+
 #if UNITY_ADDRESSABLES
                 UnityEditor.AddressableAssets.Build.BuildScript.buildCompleted += OnAddressableBuildResult;
 #endif
@@ -304,11 +305,11 @@ namespace Buildalon.Editor.BuildPipeline
                 // ReSharper disable once EnforceIfStatementBraces
                 else
 #endif
-                buildReport = UnityEditor.BuildPipeline.BuildPlayer(
-                    buildInfo.Scenes.ToArray(),
-                    buildInfo.FullOutputPath,
-                    buildInfo.BuildTarget,
-                    buildInfo.BuildOptions);
+                    buildReport = UnityEditor.BuildPipeline.BuildPlayer(
+                        buildInfo.Scenes.ToArray(),
+                        buildInfo.FullOutputPath,
+                        buildInfo.BuildTarget,
+                        buildInfo.BuildOptions);
             }
             finally
             {
@@ -317,6 +318,11 @@ namespace Buildalon.Editor.BuildPipeline
                 UnityEditor.AddressableAssets.Build.BuildScript.buildCompleted -= OnAddressableBuildResult;
 #endif
                 PlayerSettings.colorSpace = oldColorSpace;
+
+                if (PlayerSettings.productName != oldProductName)
+                {
+                    PlayerSettings.productName = oldProductName;
+                }
 
 #if UNITY_2023_1_OR_NEWER
                 if (PlayerSettings.GetApplicationIdentifier(NamedBuildTarget.FromBuildTargetGroup(buildTargetGroup)) != oldBuildIdentifier)
@@ -408,18 +414,12 @@ namespace Buildalon.Editor.BuildPipeline
 #endif //  UNITY_2021_1_OR_NEWER
             }
 
-            AssetDatabase.importPackageCompleted += ImportCallback;
-
-            var packageFullPath = TMPro.EditorUtilities.TMP_EditorUtility.packageFullPath;
-            var importPath = $"{packageFullPath}/Package Resources/TMP Essential Resources.unitypackage";
-            Debug.Log($"TextMesh Pro Essentials Import from {importPath}");
-
-            if (!System.IO.File.Exists(importPath))
+            void CleanupImportHandlers()
             {
-                throw new System.IO.FileNotFoundException($"Unable to find the TextMesh Pro package at {importPath}");
+                AssetDatabase.importPackageCompleted -= ImportCallback;
+                AssetDatabase.importPackageCancelled -= CancelCallback;
+                AssetDatabase.importPackageFailed -= FailedCallback;
             }
-
-            ImportPackageImmediately(importPath);
 
             void ImportCallback(string packageName)
             {
@@ -431,28 +431,110 @@ namespace Buildalon.Editor.BuildPipeline
                     System.IO.File.WriteAllBytes(settingsFilePath, settingsBackup);
                 }
 
-                AssetDatabase.importPackageCompleted -= ImportCallback;
+                CleanupImportHandlers();
                 tcs.TrySetResult(true);
             }
+
+            void CancelCallback(string packageName)
+            {
+                CleanupImportHandlers();
+                tcs.TrySetException(new Exception($"TMP essentials import was cancelled ({packageName})."));
+            }
+
+            void FailedCallback(string packageName, string errorMessage)
+            {
+                CleanupImportHandlers();
+                tcs.TrySetException(new Exception($"TMP essentials import failed ({packageName}): {errorMessage}"));
+            }
+
+            AssetDatabase.importPackageCompleted += ImportCallback;
+            AssetDatabase.importPackageCancelled += CancelCallback;
+            AssetDatabase.importPackageFailed += FailedCallback;
+
+            var importPath = ResolveTmpEssentialResourcesPackagePath();
+            Debug.Log($"TextMesh Pro Essentials Import from {importPath ?? "(not found)"}");
+
+            if (string.IsNullOrEmpty(importPath) || !System.IO.File.Exists(importPath))
+            {
+                CleanupImportHandlers();
+#if UNITY_6000_0_OR_NEWER
+                // Standalone com.unity.textmeshpro was merged into com.unity.ugui; this repo's CI
+                // already skips requiring Assets/TextMesh Pro on Unity 6000. Missing package is normal.
+                Debug.Log("TMP Essential Resources .unitypackage not present; skipping import.");
+                return;
+#else
+                throw new System.IO.FileNotFoundException(
+                    $"Unable to find the TextMesh Pro essentials package at {importPath ?? "(unresolved)"}.");
+#endif
+            }
+
+            ImportPackageImmediately(importPath);
 
             await tcs.Task.ConfigureAwait(true);
 
             if (!System.IO.Directory.Exists("Assets/TextMesh Pro"))
             {
+#if UNITY_6000_0_OR_NEWER
+                Debug.Log("Assets/TextMesh Pro was not created after import; continuing.");
+#else
                 throw new Exception("Failed to import TextMeshPro resources!");
+#endif
             }
-
-            Debug.Log("TextMesh Pro Essentials Import Completed");
+            else
+            {
+                Debug.Log("TextMesh Pro Essentials Import Completed");
+            }
 #else
             await Task.CompletedTask;
 #endif // TEXT_MESH_PRO
         }
 
+        /// <summary>
+        /// Resolves the TMP essentials .unitypackage path (ugui Package Resources, then TMP_EditorUtility).
+        /// </summary>
+        private static string ResolveTmpEssentialResourcesPackagePath()
+        {
+#if TEXT_MESH_PRO
+            const string relativePackage = "Package Resources/TMP Essential Resources.unitypackage";
+
+            // Unity's own TMP_PackageResourceImporter uses Packages/com.unity.ugui after the merge.
+            var uguiRoot = System.IO.Path.GetFullPath("Packages/com.unity.ugui");
+            var uguiPackage = System.IO.Path.Combine(uguiRoot, relativePackage);
+            if (System.IO.File.Exists(uguiPackage))
+            {
+                return uguiPackage;
+            }
+
+            var packageFullPath = TMPro.EditorUtilities.TMP_EditorUtility.packageFullPath;
+            if (!string.IsNullOrEmpty(packageFullPath))
+            {
+                return $"{packageFullPath}/{relativePackage}";
+            }
+#endif
+            return null;
+        }
+
+        /// <summary>
+        /// Imports a .unitypackage using internal <c>ImportPackageImmediately</c> when available (synchronous);
+        /// otherwise falls back to asynchronous <see cref="AssetDatabase.ImportPackage"/>.
+        /// Unity 6000.6+ may not expose ImportPackageImmediately.
+        /// </summary>
         private static void ImportPackageImmediately(string importPath)
         {
-            var importImmediate = typeof(AssetDatabase).GetMethod(nameof(ImportPackageImmediately), BindingFlags.NonPublic | BindingFlags.Static);
-            Debug.Assert(importImmediate != null);
-            importImmediate.Invoke(null, new object[] { importPath });
+            var importImmediate = typeof(AssetDatabase).GetMethod(
+                "ImportPackageImmediately",
+                BindingFlags.NonPublic | BindingFlags.Static);
+
+            if (importImmediate != null)
+            {
+                importImmediate.Invoke(null, new object[] { importPath });
+                return;
+            }
+
+            Debug.Log(
+                "AssetDatabase.ImportPackageImmediately is unavailable; " +
+                $"using AssetDatabase.ImportPackage(\"{importPath}\", interactive: false).");
+            AssetDatabase.ImportPackage(importPath, false);
         }
 
         /// <summary>
