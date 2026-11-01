@@ -1,7 +1,7 @@
 name: validate
 on:
   schedule:
-    - cron: '0 0 * * 0' # Every Sunday at midnight
+    - cron: '0 8 27 * *' # monthly, on a day no other Unity repo uses, so runs don't compete for license seats
   push:
     branches: [main]
   pull_request:
