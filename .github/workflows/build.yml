@@ -17,6 +17,7 @@ jobs:
       matrix: ${{ fromJSON(inputs.matrix) }}
       fail-fast: false
     runs-on: ${{ matrix.os }}
+    timeout-minutes: 90
     permissions:
       contents: read
     steps:
@@ -34,6 +35,7 @@ jobs:
 
       - uses: buildalon/unity-setup@v2
         id: unity-setup
+        timeout-minutes: 45
         with:
           unity-version: ${{ matrix.unity-version }}
           build-targets: ${{ matrix.build-target }}
@@ -47,6 +49,7 @@ jobs:
           password: ${{ secrets.UNITY_PASSWORD }}
       - uses: Buildalon/unity-action@v3
         name: ${{ matrix.build-target }}-Validate
+        timeout-minutes: 30
         with:
           build-target: ${{ matrix.build-target }}
           project-path: ${{ steps.unity-setup.outputs.unity-project-path }}
@@ -54,6 +57,7 @@ jobs:
           args: -quit -nographics -batchmode -executeMethod Buildalon.Editor.BuildPipeline.UnityPlayerBuildTools.ValidateProject -importTMProEssentialsAsset
       - uses: Buildalon/unity-action@v3
         name: ${{ matrix.build-target }}-Build
+        timeout-minutes: 30
         with:
           build-target: ${{ matrix.build-target }}
           project-path: ${{ steps.unity-setup.outputs.unity-project-path }}
