@@ -79,12 +79,12 @@ jobs:
           - os: macos-latest
             build-target: StandaloneOSX
     steps:
-      - uses: actions/checkout@v6
+      - uses: actions/checkout@v7
 
         # Installs the Unity Editor based on your project version text file
         # sets -> env.UNITY_EDITOR_PATH
         # sets -> env.UNITY_PROJECT_PATH
-      - uses: buildalon/unity-setup@v2
+      - uses: buildalon/unity-setup@v3
         id: unity-setup # used to get project path output in later steps
         with:
           unity-version: ${{ matrix.unity-versions }}
@@ -92,14 +92,14 @@ jobs:
           version-file: path/to/your/ProjectSettings/ProjectVersion.txt # optional, this step will attempt to auto detect if not provided
 
         # Activates the installation with the provided credentials
-      - uses: buildalon/activate-unity-license@v2
+      - uses: buildalon/activate-unity-license@v3
         with:
           license: 'Personal' # Choose license type to use [ Personal, Professional ]
           username: ${{ secrets.UNITY_USERNAME }}
           password: ${{ secrets.UNITY_PASSWORD }}
           # serial: ${{ secrets.UNITY_SERIAL }} # Required for pro activations
 
-      - uses: buildalon/unity-action@v3
+      - uses: buildalon/unity-action@v4
         name: ${{ matrix.build-target }}-Validate
         with:
           log-name: ${{ matrix.build-target }}-Validate
@@ -107,7 +107,7 @@ jobs:
           project-path: ${{ steps.unity-setup.outputs.unity-project-path }}
           args: -quit -nographics -batchmode -executeMethod Buildalon.Editor.BuildPipeline.UnityPlayerBuildTools.ValidateProject -importTMProEssentialsAsset
 
-      - uses: buildalon/unity-action@v3
+      - uses: buildalon/unity-action@v4
         name: ${{ matrix.build-target }}-Build
         with:
           log-name: ${{ matrix.build-target }}-Build
