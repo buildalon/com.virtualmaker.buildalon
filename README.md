@@ -14,7 +14,7 @@ If you're new to CI/CD, you can **learn how to setup build automation in 1 minut
 
 Requires Unity 2019.4 LTS or higher.
 
-CI tests the current Unity streams on pull requests, and a monthly run covers the older lines. Every Unity row reports as its own check, and rows on a stream that only has alpha releases report without failing the run.
+CI tests the current Unity streams on pull requests, and a monthly run covers the older lines. Every Unity row reports as its own check, and rows on a stream with no final release yet (alpha or beta) report without failing the run.
 
 The recommended installation method is though the unity package manager and [OpenUPM](https://openupm.com/packages/com.virtualmaker.buildalon).
 
