@@ -13,6 +13,7 @@ namespace Buildalon.Editor.BuildPipeline
 
         public override void OnPostProcessBuild(BuildReport report)
         {
+            base.OnPostProcessBuild(report);
             if (EditorUserBuildSettings.activeBuildTarget != BuildTarget) { return; }
 #if PLATFORM_IOS
             var projectPath = $"{report.summary.outputPath}/Unity-iPhone.xcodeproj/project.pbxproj";
@@ -22,7 +23,7 @@ namespace Buildalon.Editor.BuildPipeline
             var mainTargetGuid = pbxProject.GetUnityMainTargetGuid();
 #else
             var targetName = PBXProject.GetUnityTargetName();
-            var targetGuid = pbxProject.TargetGuidByName(targetName);
+            var mainTargetGuid = pbxProject.TargetGuidByName(targetName);
 #endif // UNITY_2019_3_OR_NEWER
             // https://discussions.unity.com/t/2019-3-validation-on-upload-to-store-gives-unityframework-framework-contains-disallowed-file/759612/27
             pbxProject.SetBuildProperty(pbxProject.GetUnityFrameworkTargetGuid(), "ALWAYS_EMBED_SWIFT_STANDARD_LIBRARIES", "NO");
