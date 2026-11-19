@@ -1,5 +1,6 @@
 {
     "name": "Buildalon.BuildPipeline.Editor",
+    "rootNamespace": "Buildalon.BuildPipeline.Editor",
     "references": [
         "GUID:6546d7765b4165b40850b3667f981c26",
         "GUID:69448af7b92c7f342b298e06a37122aa"
